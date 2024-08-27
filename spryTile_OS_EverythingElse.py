@@ -332,12 +332,13 @@ class VIEW3D_OP_SprytileGui(bpy.types.Operator):
         display_size = round(display_size[0] * display_scale), round(display_size[1] * display_scale)
         
         display_pad_x = 30 if context.space_data.show_region_ui else 5
-        display_pad_y = 5
+        display_pad_y = 30
 
         size_half = Vector((int(display_size[0]/2), int(display_size[1]/2)))
 
-        display_min = Vector((display_pad_y/3 + size_half.x/3, display_pad_y/3 + size_half.y/3))
-        display_max = Vector((context.region.width*3 - display_pad_x*3 - size_half.x*3, context.region.height*3 - display_pad_y*3 - size_half.y*3))
+        display_min = Vector((display_pad_x/3 - size_half.x/3, display_pad_y/3 - size_half.y/3))
+        display_max = Vector((context.region.width - display_pad_x - size_half.x, 
+                            context.region.height - display_pad_y - size_half.y))
 
         display_offset = Vector((context.scene.sprytile_ui.palette_pos[0], context.scene.sprytile_ui.palette_pos[1]))
 
