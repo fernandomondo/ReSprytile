@@ -236,20 +236,28 @@ class VIEW3D_OP_SprytileGui(bpy.types.Operator):
             context.area.tag_redraw()
 
     def set_zoom_level(self, context, zoom_shift):
+        MAX_ZOOM_LEVEL = 1.0 #hack: Define maximum zoom
         region = context.region
         zoom_level = context.scene.sprytile_ui.zoom
         zoom_level = self.calc_zoom(region, zoom_level, zoom_shift)
+
+        zoom_level = min(zoom_level, MAX_ZOOM_LEVEL) #hack: Limit Zoom
+
         display_size = VIEW3D_OP_SprytileGui.display_size
 
         calc_size = round(display_size[0] * zoom_level), round(display_size[1] * zoom_level)
-        height_min = min(512, display_size[1])
+        height_min = min(256, display_size[1])
         while calc_size[1] < height_min:
             zoom_level = self.calc_zoom(region, zoom_level, 1)
             calc_size = round(display_size[0] * zoom_level), round(display_size[1] * zoom_level)
 
+            zoom_level = min(zoom_level, MAX_ZOOM_LEVEL) #hack: Limit Zoom
+
         while calc_size[0] > region.width*3 or calc_size[1] > region.height*3:
             zoom_level = self.calc_zoom(region, zoom_level, -1)
             calc_size = round(display_size[0] * zoom_level), round(display_size[1] * zoom_level)
+
+            zoom_level = min(zoom_level, MAX_ZOOM_LEVEL) #hack: Limit Zoom
 
         # Before setting new zoom, calculate palette position
         display_offset, display_size, size_half, display_min, display_max = self.calc_palette_pos(context)
@@ -438,7 +446,7 @@ class VIEW3D_OP_SprytileGui(bpy.types.Operator):
                     VIEW3D_OP_SprytileGui.sel_start = grid_pos
                     VIEW3D_OP_SprytileGui.sel_origin = (tilegrid.tile_selection[0], tilegrid.tile_selection[1])
 
-            if VIEW3D_OP_SprytileGui.is_moving and event.type == 'LEFTMOUSE':
+            """if VIEW3D_OP_SprytileGui.is_moving and event.type == 'LEFTMOUSE':
                 move_delta = Vector((grid_pos.x - VIEW3D_OP_SprytileGui.sel_start.x, grid_pos.y - VIEW3D_OP_SprytileGui.sel_start.y))
                 # Restrict movement inside tile grid
                 move_min = (VIEW3D_OP_SprytileGui.sel_origin[0] + move_delta.x,
@@ -457,7 +465,7 @@ class VIEW3D_OP_SprytileGui(bpy.types.Operator):
 
                 tilegrid.tile_selection[0] = VIEW3D_OP_SprytileGui.sel_origin[0] + move_delta.x
                 tilegrid.tile_selection[1] = VIEW3D_OP_SprytileGui.sel_origin[1] + move_delta.y
-            # End tile selection movement code
+            # End tile selection movement code"""
 
             # Code for moving tile palette around
             if context.scene.sprytile_ui.middle_btn:
